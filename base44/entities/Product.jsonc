@@ -1,0 +1,51 @@
+{
+  "name": "Product",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Product name"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "Boisson",
+        "Alimentaire",
+        "Hygi\u00e8ne",
+        "Autre"
+      ],
+      "description": "Product category"
+    },
+    "price": {
+      "type": "number",
+      "description": "Selling price"
+    },
+    "cost": {
+      "type": "number",
+      "description": "Purchase cost"
+    },
+    "stock": {
+      "type": "number",
+      "default": 0,
+      "description": "Current stock quantity"
+    },
+    "alert_threshold": {
+      "type": "number",
+      "default": 10,
+      "description": "Low stock alert threshold"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Product image URL"
+    },
+    "unit": {
+      "type": "string",
+      "default": "unit\u00e9",
+      "description": "Unit of measure"
+    }
+  },
+  "required": [
+    "name",
+    "price"
+  ]
+}

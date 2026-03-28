@@ -5,43 +5,62 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
-// Add page imports here
+
+import AppLayout from './components/layout/AppLayout';
+import Dashboard from './pages/Dashboard';
+import Sales from './pages/Sales';
+import Products from './pages/Products';
+import Clients from './pages/Clients';
+import Accounting from './pages/Accounting';
+import Finance from './pages/Finance';
+import Marketing from './pages/Marketing';
+import BusinessPlan from './pages/BusinessPlan';
+import Assistant from './pages/Assistant';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
-  // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+      <div className="fixed inset-0 flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center mx-auto mb-4">
+            <span className="text-primary-foreground font-bold text-lg">N</span>
+          </div>
+          <div className="w-8 h-8 border-4 border-muted border-t-primary rounded-full animate-spin mx-auto"></div>
+        </div>
       </div>
     );
   }
 
-  // Handle authentication errors
   if (authError) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
       navigateToLogin();
       return null;
     }
   }
 
-  // Render the main app
   return (
     <Routes>
-      {/* Add your page Route elements here */}
+      <Route element={<AppLayout />}>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/sales" element={<Sales />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/clients" element={<Clients />} />
+        <Route path="/accounting" element={<Accounting />} />
+        <Route path="/finance" element={<Finance />} />
+        <Route path="/marketing" element={<Marketing />} />
+        <Route path="/business-plan" element={<BusinessPlan />} />
+        <Route path="/assistant" element={<Assistant />} />
+      </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
 };
 
-
 function App() {
-
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>

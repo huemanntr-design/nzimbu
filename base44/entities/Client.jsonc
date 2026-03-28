@@ -1,0 +1,46 @@
+{
+  "name": "Client",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Client name"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Phone number"
+    },
+    "location": {
+      "type": "string",
+      "description": "Location/address"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "lead",
+        "actif",
+        "vip",
+        "inactif"
+      ],
+      "default": "actif"
+    },
+    "credit_due": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount owed"
+    },
+    "credit_limit": {
+      "type": "number",
+      "default": 0,
+      "description": "Credit limit"
+    },
+    "total_revenue": {
+      "type": "number",
+      "default": 0,
+      "description": "Total revenue from client"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

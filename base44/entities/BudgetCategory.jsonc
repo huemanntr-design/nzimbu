@@ -1,0 +1,27 @@
+{
+  "name": "BudgetCategory",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Category name"
+    },
+    "budget": {
+      "type": "number",
+      "description": "Monthly budget"
+    },
+    "spent": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount spent this month"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Icon/emoji"
+    }
+  },
+  "required": [
+    "name",
+    "budget"
+  ]
+}

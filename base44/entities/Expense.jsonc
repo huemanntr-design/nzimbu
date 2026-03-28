@@ -1,0 +1,44 @@
+{
+  "name": "Expense",
+  "type": "object",
+  "properties": {
+    "description": {
+      "type": "string",
+      "description": "Expense description"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Immobilier",
+        "Transport",
+        "RH",
+        "Utilit\u00e9s",
+        "Communication",
+        "Mat\u00e9riel",
+        "Autre"
+      ],
+      "description": "Expense category"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Amount"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Expense date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "approved",
+        "pending"
+      ],
+      "default": "pending"
+    }
+  },
+  "required": [
+    "description",
+    "amount"
+  ]
+}

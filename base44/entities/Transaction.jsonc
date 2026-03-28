@@ -1,0 +1,47 @@
+{
+  "name": "Transaction",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "income",
+        "expense",
+        "transfer"
+      ],
+      "description": "Transaction type"
+    },
+    "category": {
+      "type": "string",
+      "description": "Category"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Amount"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Transaction date"
+    },
+    "account": {
+      "type": "string",
+      "enum": [
+        "cash",
+        "mpesa",
+        "airtel",
+        "orange",
+        "bank"
+      ],
+      "default": "cash"
+    }
+  },
+  "required": [
+    "type",
+    "amount"
+  ]
+}

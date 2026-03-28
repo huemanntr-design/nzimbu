@@ -1,0 +1,46 @@
+{
+  "name": "MarketingPost",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Post title"
+    },
+    "content": {
+      "type": "string",
+      "description": "Post content"
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "instagram",
+        "facebook",
+        "tiktok",
+        "linkedin"
+      ],
+      "description": "Platform"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "scheduled"
+      ],
+      "default": "draft"
+    },
+    "scheduled_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Scheduled publish date"
+    },
+    "template": {
+      "type": "string",
+      "description": "Template type used"
+    }
+  },
+  "required": [
+    "title",
+    "platform"
+  ]
+}

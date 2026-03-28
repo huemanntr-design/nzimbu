@@ -1,0 +1,58 @@
+{
+  "name": "Sale",
+  "type": "object",
+  "properties": {
+    "product_id": {
+      "type": "string",
+      "description": "Product ID"
+    },
+    "product_name": {
+      "type": "string",
+      "description": "Product name"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Client ID"
+    },
+    "client_name": {
+      "type": "string",
+      "description": "Client name"
+    },
+    "quantity": {
+      "type": "number",
+      "description": "Quantity sold"
+    },
+    "unit_price": {
+      "type": "number",
+      "description": "Unit selling price"
+    },
+    "total": {
+      "type": "number",
+      "description": "Total amount"
+    },
+    "profit": {
+      "type": "number",
+      "description": "Profit from sale"
+    },
+    "payment_method": {
+      "type": "string",
+      "enum": [
+        "cash",
+        "mobile_money",
+        "credit",
+        "bank"
+      ],
+      "default": "cash"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Sale date"
+    }
+  },
+  "required": [
+    "product_name",
+    "quantity",
+    "total"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "name": "Debt",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Debt name"
+    },
+    "total_amount": {
+      "type": "number",
+      "description": "Total debt amount"
+    },
+    "paid_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Amount already paid"
+    },
+    "monthly_payment": {
+      "type": "number",
+      "description": "Monthly payment"
+    },
+    "interest_rate": {
+      "type": "number",
+      "default": 0,
+      "description": "Interest rate %"
+    },
+    "remaining_months": {
+      "type": "number",
+      "description": "Remaining months"
+    }
+  },
+  "required": [
+    "name",
+    "total_amount"
+  ]
+}

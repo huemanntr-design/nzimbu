@@ -1,141 +1,114 @@
 import { useState } from 'react';
-import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/button';
-import { Save, Globe, Bell, Smartphone, User } from 'lucide-react';
-
-const LANGUAGES = [
-  { code: 'fr', label: 'Français' },
-  { code: 'ln', label: 'Lingala' },
-  { code: 'en', label: 'English' },
-  { code: 'sw', label: 'Swahili' },
-];
+import { Save } from 'lucide-react';
 
 export default function Parametres() {
-  const { data: user } = useQuery({ queryKey: ['me'], queryFn: () => base44.auth.me() });
-  const [lang, setLang] = useState('fr');
-  const [notifs, setNotifs] = useState({ invoices: true, payments: true, lowStock: true, quietStart: '22:00', quietEnd: '07:00' });
-  const [profile, setProfile] = useState({ business_name: 'Mon Commerce', wa_number: '', rccm: '', nif: '' });
   const [saved, setSaved] = useState(false);
+  const [profile, setProfile] = useState({ company: '', phone: '', address: '', rccm: '', idnat: '' });
+  const [notifications, setNotifications] = useState({ lowStock: true, overdueInvoice: true, newPayment: true });
+
+  const { data: user } = useQuery({
+    queryKey: ['me'],
+    queryFn: () => base44.auth.me(),
+  });
 
   const handleSave = () => {
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
 
-  const ToggleRow = ({ label, value, onChange }) => (
-    <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
-      <p className="text-sm text-foreground">{label}</p>
-      <button
-        onClick={() => onChange(!value)}
-        className={`w-12 h-6 rounded-full transition-colors relative ${value ? 'bg-primary' : 'bg-muted'}`}
-      >
-        <div className={`w-5 h-5 rounded-full bg-white absolute top-0.5 transition-all ${value ? 'left-6' : 'left-0.5'}`} />
-      </button>
-    </div>
-  );
-
   return (
     <div>
-      <PageHeader title="Paramètres" />
+      <PageHeader
+        title="Paramètres"
+        subtitle="Configuration de l'application"
+        action={
+          <Button size="sm" className="bg-primary hover:bg-primary/90 border-0 h-8" onClick={handleSave}>
+            <Save size={14} /> {saved ? 'Sauvegardé ✓' : 'Sauvegarder'}
+          </Button>
+        }
+      />
 
-      {/* Profile */}
-      <div className="bg-card border border-border rounded-xl p-4 mb-4">
-        <div className="flex items-center gap-2 mb-3">
-          <User size={16} className="text-primary" />
-          <p className="text-sm font-semibold text-foreground">Profil Commercial</p>
-        </div>
-        <div className="space-y-3">
+      <div className="space-y-4">
+        {/* User info */}
+        {user && (
+          <div className="bg-card border border-border rounded-xl p-4">
+            <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">Compte</p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+                {user.full_name?.[0] || 'U'}
+              </div>
+              <div>
+                <p className="font-semibold text-sm">{user.full_name}</p>
+                <p className="text-xs text-muted-foreground">{user.email}</p>
+                <span className="text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full">{user.role}</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Business profile */}
+        <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+          <p className="text-xs text-muted-foreground uppercase tracking-widest">Profil commercial</p>
           {[
-            { k: 'business_name', label: 'Nom de l\'entreprise' },
-            { k: 'wa_number', label: 'Numéro WhatsApp Business' },
-            { k: 'rccm', label: 'RCCM' },
-            { k: 'nif', label: 'NIF' },
-          ].map(({ k, label }) => (
-            <div key={k}>
+            { key: 'company', label: "Nom de l'entreprise", placeholder: "Ma Boutique SARL" },
+            { key: 'phone', label: "Téléphone", placeholder: "+243 8X XXX XXXX" },
+            { key: 'address', label: "Adresse", placeholder: "Kinshasa, Gombe" },
+            { key: 'rccm', label: "RCCM", placeholder: "CD/KIN/RCCM/..." },
+            { key: 'idnat', label: "ID National", placeholder: "01-..." },
+          ].map(({ key, label, placeholder }) => (
+            <div key={key}>
               <label className="text-xs text-muted-foreground mb-1 block">{label}</label>
               <input
-                value={profile[k]}
-                onChange={e => setProfile(p => ({ ...p, [k]: e.target.value }))}
+                value={profile[key]}
+                onChange={e => setProfile(p => ({ ...p, [key]: e.target.value }))}
+                placeholder={placeholder}
                 className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Language */}
-      <div className="bg-card border border-border rounded-xl p-4 mb-4">
-        <div className="flex items-center gap-2 mb-3">
-          <Globe size={16} className="text-primary" />
-          <p className="text-sm font-semibold text-foreground">Langue</p>
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          {LANGUAGES.map(l => (
-            <button
-              key={l.code}
-              onClick={() => setLang(l.code)}
-              className={`py-2 rounded-lg text-sm font-medium transition-colors ${lang === l.code ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:bg-secondary/50'}`}
-            >
-              {l.label}
-            </button>
+        {/* Notifications */}
+        <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+          <p className="text-xs text-muted-foreground uppercase tracking-widest">Alertes & Notifications</p>
+          {[
+            { key: 'lowStock', label: 'Stock bas', desc: 'Alerte quand un produit est sous le seuil' },
+            { key: 'overdueInvoice', label: 'Factures en retard', desc: 'Rappel pour les factures échues' },
+            { key: 'newPayment', label: 'Nouveau paiement', desc: 'Notification de paiement reçu' },
+          ].map(({ key, label, desc }) => (
+            <div key={key} className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium">{label}</p>
+                <p className="text-xs text-muted-foreground">{desc}</p>
+              </div>
+              <button
+                onClick={() => setNotifications(n => ({ ...n, [key]: !n[key] }))}
+                className={`w-11 h-6 rounded-full transition-colors ${notifications[key] ? 'bg-primary' : 'bg-muted'} relative`}
+              >
+                <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${notifications[key] ? 'left-6' : 'left-1'}`} />
+              </button>
+            </div>
           ))}
         </div>
-      </div>
 
-      {/* Notifications */}
-      <div className="bg-card border border-border rounded-xl p-4 mb-4">
-        <div className="flex items-center gap-2 mb-3">
-          <Bell size={16} className="text-primary" />
-          <p className="text-sm font-semibold text-foreground">Notifications</p>
-        </div>
-        <ToggleRow label="Nouvelles factures" value={notifs.invoices} onChange={v => setNotifs(n => ({ ...n, invoices: v }))} />
-        <ToggleRow label="Paiements reçus" value={notifs.payments} onChange={v => setNotifs(n => ({ ...n, payments: v }))} />
-        <ToggleRow label="Ruptures de stock" value={notifs.lowStock} onChange={v => setNotifs(n => ({ ...n, lowStock: v }))} />
-        <div className="grid grid-cols-2 gap-2 mt-3">
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Heure calme (début)</label>
-            <input type="time" value={notifs.quietStart} onChange={e => setNotifs(n => ({ ...n, quietStart: e.target.value }))}
-              className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none" />
+        {/* WhatsApp API */}
+        <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+          <p className="text-xs text-muted-foreground uppercase tracking-widest">WhatsApp API</p>
+          <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
+            <p className="text-xs text-green-400 font-medium">✓ Intégration WhatsApp active</p>
+            <p className="text-xs text-muted-foreground mt-1">Les messages sont envoyés via l'API WhatsApp intégrée.</p>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Heure calme (fin)</label>
-            <input type="time" value={notifs.quietEnd} onChange={e => setNotifs(n => ({ ...n, quietEnd: e.target.value }))}
+            <label className="text-xs text-muted-foreground mb-1 block">Numéro WhatsApp Business</label>
+            <input placeholder="+243 8X XXX XXXX"
               className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none" />
           </div>
         </div>
       </div>
-
-      {/* WhatsApp API */}
-      <div className="bg-card border border-border rounded-xl p-4 mb-4">
-        <div className="flex items-center gap-2 mb-3">
-          <Smartphone size={16} className="text-green-400" />
-          <p className="text-sm font-semibold text-foreground">WhatsApp API</p>
-        </div>
-        <p className="text-xs text-muted-foreground mb-3">Connectez Twilio ou Meta Cloud API pour l'envoi automatique.</p>
-        <div className="grid grid-cols-2 gap-2">
-          {['Twilio', 'Meta Cloud API'].map(provider => (
-            <button key={provider} className="bg-muted border border-border rounded-lg py-3 text-xs font-medium text-muted-foreground hover:border-primary/50 hover:text-foreground transition-colors">
-              {provider}
-            </button>
-          ))}
-        </div>
-        <p className="text-[10px] text-muted-foreground mt-2 text-center">Configuration via les variables d'environnement</p>
-      </div>
-
-      {/* User info */}
-      {user && (
-        <div className="bg-card border border-border rounded-xl p-4 mb-4">
-          <p className="text-xs text-muted-foreground mb-1">Compte connecté</p>
-          <p className="text-sm font-semibold text-foreground">{user.full_name}</p>
-          <p className="text-xs text-muted-foreground">{user.email}</p>
-        </div>
-      )}
-
-      <Button onClick={handleSave} className={`w-full border-0 ${saved ? 'bg-green-600' : 'gradient-primary'}`}>
-        <Save size={16} /> {saved ? 'Sauvegardé ✓' : 'Sauvegarder'}
-      </Button>
     </div>
   );
 }

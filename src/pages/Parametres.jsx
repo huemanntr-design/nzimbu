@@ -11,7 +11,7 @@ export default function Parametres() {
   const qc = useQueryClient();
   const [saved, setSaved] = useState(false);
   const [profile, setProfile] = useState({ company: '', phone: '', address: '', rccm: '', idnat: '' });
-  const [notifications, setNotifications] = useState({ lowStock: true, overdueInvoice: true, newPayment: true });
+  const [notifications, setNotifications] = useState({ lowStock: true, overdueInvoice: true, newPayment: true, newClient: false, lowMargin: false, highCredit: true, dailySummary: true, frequency: 'realtime' });
   const [showTauxForm, setShowTauxForm] = useState(false);
   const [tauxForm, setTauxForm] = useState({ date: today(), rate_cdf_per_usd: '', buying: '', selling: '', source: 'manuel' });
 
@@ -89,23 +89,49 @@ export default function Parametres() {
         </div>
 
         {/* Notifications */}
-        <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+        <div className="bg-card border border-border rounded-xl p-4 space-y-4">
           <p className="text-xs text-muted-foreground uppercase tracking-widest">Alertes & Notifications</p>
+
+          {/* Global frequency */}
+          <div className="bg-muted/50 rounded-xl p-3">
+            <p className="text-xs font-semibold mb-2">🔔 Fréquence des notifications</p>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { val: 'realtime', label: 'Temps réel', icon: '⚡' },
+                { val: 'daily', label: 'Quotidien', icon: '📅' },
+                { val: 'weekly', label: 'Hebdo', icon: '📆' },
+              ].map(f => (
+                <button key={f.val} onClick={() => setNotifications(n => ({ ...n, frequency: f.val }))}
+                  className={`py-2 rounded-xl text-xs font-medium transition-colors ${notifications.frequency === f.val ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:text-foreground'}`}>
+                  {f.icon} {f.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Per-type toggles */}
           {[
-            { key: 'lowStock', label: 'Stock bas', desc: 'Alerte quand un produit est sous le seuil' },
-            { key: 'overdueInvoice', label: 'Factures en retard', desc: 'Rappel pour les factures échues' },
-            { key: 'newPayment', label: 'Nouveau paiement', desc: 'Notification de paiement reçu' },
-          ].map(({ key, label, desc }) => (
-            <div key={key} className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium">{label}</p>
-                <p className="text-xs text-muted-foreground">{desc}</p>
+            { key: 'lowStock', icon: '📦', label: 'Stock bas', desc: 'Alerte quand un produit est sous le seuil de réapprovisionnement' },
+            { key: 'overdueInvoice', icon: '📄', label: 'Factures en retard', desc: 'Rappel pour les factures échues non payées' },
+            { key: 'newPayment', icon: '💳', label: 'Nouveau paiement', desc: 'Notification à chaque paiement reçu' },
+            { key: 'newClient', icon: '👤', label: 'Nouveau client', desc: 'Alerte quand un nouveau client est ajouté' },
+            { key: 'lowMargin', icon: '📉', label: 'Marge faible', desc: 'Alerte si la marge d\'un produit passe sous 10%' },
+            { key: 'highCredit', icon: '⚠️', label: 'Crédit élevé', desc: 'Client qui dépasse sa limite de crédit' },
+            { key: 'dailySummary', icon: '📊', label: 'Résumé journalier', desc: 'Bilan quotidien des ventes et dépenses' },
+          ].map(({ key, icon, label, desc }) => (
+            <div key={key} className="flex items-center justify-between py-1">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <span className="text-xl shrink-0">{icon}</span>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium">{label}</p>
+                  <p className="text-xs text-muted-foreground truncate">{desc}</p>
+                </div>
               </div>
               <button
                 onClick={() => setNotifications(n => ({ ...n, [key]: !n[key] }))}
-                className={`w-11 h-6 rounded-full transition-colors ${notifications[key] ? 'bg-primary' : 'bg-muted'} relative`}
+                className={`ml-3 w-11 h-6 rounded-full transition-colors shrink-0 relative ${notifications[key] ? 'bg-primary' : 'bg-muted'}`}
               >
-                <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${notifications[key] ? 'left-6' : 'left-1'}`} />
+                <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${notifications[key] ? 'left-6' : 'left-1'}`} />
               </button>
             </div>
           ))}

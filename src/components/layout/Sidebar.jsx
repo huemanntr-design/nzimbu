@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import NotificationBell from './NotificationBell';
 import { 
   Home, ShoppingBag, Users,
   Megaphone, FileText, MessageCircle,
@@ -57,6 +58,9 @@ export default function Sidebar({ collapsed, onToggle }) {
           );
         })}
       </nav>
+
+      {/* Notification Bell */}
+      <NotificationBell collapsed={collapsed} />
 
       {/* Toggle */}
       <button

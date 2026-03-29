@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Plus, Minus, AlertTriangle, Search, X } from 'lucide-react';
+import ProductDetailModal from '@/components/stock/ProductDetailModal';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from 'recharts';
 import { motion } from 'framer-motion';
 
@@ -27,6 +28,7 @@ export default function Stock() {
   const [tab, setTab] = useState('Catalogue');
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [form, setForm] = useState({ name: '', sku: '', type: 'Autre', price_usd: 0, cost_price: 0, stock_qty: 0, reorder_point: 10 });
 
   const { data: products = [] } = useQuery({
@@ -180,7 +182,7 @@ export default function Stock() {
               const stockPct = th > 0 ? Math.min(100, Math.round((s / (th * 3)) * 100)) : 50;
               const price = p.price_usd || p.price || 0;
               return (
-                <motion.div key={p.id} className="bg-card border border-border rounded-2xl p-5 hover:border-primary/40 transition-colors">
+                <motion.div key={p.id} onClick={() => setSelectedProduct(p)} className="bg-card border border-border rounded-2xl p-5 hover:border-primary/40 transition-colors cursor-pointer">
                   <div className="text-4xl mb-3 text-center">{TYPE_EMOJI[p.type] || '📦'}</div>
                   <h3 className="font-bold text-sm">{p.name}</h3>
                   <p className="text-xs text-muted-foreground mb-3">{p.type}</p>
@@ -364,6 +366,9 @@ export default function Stock() {
             })}
           </div>
         </div>
+      )}
+      {selectedProduct && (
+        <ProductDetailModal product={selectedProduct} onClose={() => setSelectedProduct(null)} />
       )}
     </div>
   );

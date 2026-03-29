@@ -1,14 +1,30 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import PageHeader from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/button';
-import { Save } from 'lucide-react';
+import { Save, Plus, TrendingUp, TrendingDown } from 'lucide-react';
+
+const today = () => new Date().toISOString().split('T')[0];
 
 export default function Parametres() {
+  const qc = useQueryClient();
   const [saved, setSaved] = useState(false);
   const [profile, setProfile] = useState({ company: '', phone: '', address: '', rccm: '', idnat: '' });
   const [notifications, setNotifications] = useState({ lowStock: true, overdueInvoice: true, newPayment: true });
+  const [showTauxForm, setShowTauxForm] = useState(false);
+  const [tauxForm, setTauxForm] = useState({ date: today(), rate_cdf_per_usd: '', buying: '', selling: '', source: 'manuel' });
+
+  const { data: rates = [] } = useQuery({ queryKey: ['fxRates'], queryFn: () => base44.entities.FxRate.list('-date', 10) });
+
+  const createTauxMutation = useMutation({
+    mutationFn: (data) => base44.entities.FxRate.create(data),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['fxRates'] }); setShowTauxForm(false); },
+  });
+
+  const latest = rates[0];
+  const prev = rates[1];
+  const delta = latest && prev ? latest.rate_cdf_per_usd - prev.rate_cdf_per_usd : 0;
 
   const { data: user } = useQuery({
     queryKey: ['me'],
@@ -93,6 +109,58 @@ export default function Parametres() {
               </button>
             </div>
           ))}
+        </div>
+
+        {/* Taux de Change */}
+        <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground uppercase tracking-widest">Taux de Change CDF/USD</p>
+            <Button size="sm" className="h-7 text-xs bg-primary hover:bg-primary/90 border-0" onClick={() => setShowTauxForm(true)}>
+              <Plus size={12} /> Saisir
+            </Button>
+          </div>
+          {latest && (
+            <div className="bg-muted/50 rounded-xl p-3">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-lg font-bold">{latest.rate_cdf_per_usd?.toLocaleString('fr-FR')} CDF <span className="text-xs text-muted-foreground">= 1 USD</span></p>
+                  <p className="text-xs text-muted-foreground">{latest.date} · {latest.source}</p>
+                </div>
+                {delta !== 0 && (
+                  <span className={`flex items-center gap-1 text-xs font-medium ${delta > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                    {delta > 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                    {delta > 0 ? '+' : ''}{delta.toFixed(0)}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+          {showTauxForm && (
+            <div className="grid grid-cols-2 gap-2">
+              <input type="date" value={tauxForm.date} onChange={e => setTauxForm(f => ({ ...f, date: e.target.value }))}
+                className="bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground col-span-2 focus:outline-none" />
+              <input type="number" placeholder="Taux moyen CDF/USD *" value={tauxForm.rate_cdf_per_usd} onChange={e => setTauxForm(f => ({ ...f, rate_cdf_per_usd: e.target.value }))}
+                className="bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground col-span-2 focus:outline-none" />
+              <input type="number" placeholder="Achat" value={tauxForm.buying} onChange={e => setTauxForm(f => ({ ...f, buying: e.target.value }))}
+                className="bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none" />
+              <input type="number" placeholder="Vente" value={tauxForm.selling} onChange={e => setTauxForm(f => ({ ...f, selling: e.target.value }))}
+                className="bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none" />
+              <div className="col-span-2 flex gap-2">
+                <Button size="sm" className="flex-1 bg-primary hover:bg-primary/90 border-0"
+                  onClick={() => tauxForm.rate_cdf_per_usd && createTauxMutation.mutate({ ...tauxForm, rate_cdf_per_usd: +tauxForm.rate_cdf_per_usd, buying: +tauxForm.buying || +tauxForm.rate_cdf_per_usd - 10, selling: +tauxForm.selling || +tauxForm.rate_cdf_per_usd + 10 })}
+                  disabled={createTauxMutation.isPending}>Enregistrer</Button>
+                <Button size="sm" variant="outline" onClick={() => setShowTauxForm(false)}>Annuler</Button>
+              </div>
+            </div>
+          )}
+          <div className="space-y-1">
+            {rates.slice(0, 5).map(r => (
+              <div key={r.id} className="flex justify-between text-xs">
+                <span className="text-muted-foreground">{r.date}</span>
+                <span className="font-medium">{r.rate_cdf_per_usd?.toLocaleString('fr-FR')} CDF</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* WhatsApp API */}

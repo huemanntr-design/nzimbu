@@ -81,6 +81,7 @@ export default function Accounting() {
           <TabsTrigger value="expenses">💸 Dépenses</TabsTrigger>
           <TabsTrigger value="reports">📊 Rapports</TabsTrigger>
           <TabsTrigger value="taxes">🏛 Taxes</TabsTrigger>
+          <TabsTrigger value="rapports">📈 Analytique</TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -244,6 +245,48 @@ export default function Accounting() {
               <span className="text-xs text-green-400">{totalRevenue > 0 ? ((profit / totalRevenue) * 100).toFixed(1) : 0}%</span>
             </div>
           </div>
+        </div>
+      )}
+
+      {tab === 'rapports' && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="bg-card border border-border rounded-xl p-4 col-span-2">
+              <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Bénéfice Net</p>
+              <p className={`text-3xl font-bold ${profit >= 0 ? 'text-green-400' : 'text-red-400'}`}>${profit.toFixed(2)}</p>
+            </div>
+            <div className="bg-card border border-border rounded-xl p-3">
+              <p className="text-xs text-muted-foreground">Revenus encaissés</p>
+              <p className="text-lg font-bold text-green-400">${totalRevenue.toFixed(2)}</p>
+            </div>
+            <div className="bg-card border border-border rounded-xl p-3">
+              <p className="text-xs text-muted-foreground">Dépenses</p>
+              <p className="text-lg font-bold text-red-400">${totalExpenses.toFixed(2)}</p>
+            </div>
+          </div>
+          {categoryData.length > 0 && (
+            <div className="bg-card border border-border rounded-xl p-4">
+              <p className="text-xs text-muted-foreground mb-3">Dépenses par catégorie</p>
+              <div className="flex items-center gap-4">
+                <PieChart width={120} height={120}>
+                  <Pie data={categoryData} cx={55} cy={55} innerRadius={30} outerRadius={55} dataKey="value">
+                    {categoryData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                  </Pie>
+                </PieChart>
+                <div className="space-y-1 flex-1">
+                  {categoryData.map((d, i) => (
+                    <div key={d.name} className="flex justify-between items-center text-xs">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2 h-2 rounded-full" style={{ background: COLORS[i % COLORS.length] }} />
+                        <span className="text-muted-foreground">{d.name}</span>
+                      </div>
+                      <span className="font-medium">${d.value.toFixed(0)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

@@ -19,9 +19,8 @@ import Assistant from './pages/Assistant';
 import Invoices from './pages/Invoices.jsx';
 import Stock from './pages/Stock.jsx';
 import Messagerie from './pages/Messagerie.jsx';
-import Taux from './pages/Taux.jsx';
-import Rapports from './pages/Rapports.jsx';
 import Parametres from './pages/Parametres.jsx';
+import FinancePerso from './pages/FinancePerso.jsx';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -63,9 +62,8 @@ const AuthenticatedApp = () => {
         <Route path="/invoices" element={<Invoices />} />
         <Route path="/stock" element={<Stock />} />
         <Route path="/messagerie" element={<Messagerie />} />
-        <Route path="/taux" element={<Taux />} />
-        <Route path="/rapports" element={<Rapports />} />
         <Route path="/parametres" element={<Parametres />} />
+        <Route path="/finance-perso" element={<FinancePerso />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

@@ -33,7 +33,7 @@ export default function Dashboard() {
   const totalRevenue = sales.reduce((sum, s) => sum + (s.total || 0), 0);
   const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
   const totalProfit = totalRevenue - totalExpenses;
-  const lowStockCount = products.filter(p => p.stock <= (p.alert_threshold || 10)).length;
+  const lowStockCount = products.filter(p => (p.stock_qty ?? p.stock ?? 0) <= (p.reorder_point ?? p.alert_threshold ?? 10)).length;
 
   const now = new Date();
   const dateStr = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });

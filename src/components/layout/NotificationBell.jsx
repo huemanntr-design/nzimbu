@@ -13,7 +13,7 @@ function useNotifications() {
   products.forEach(p => {
     const s = p.stock_qty ?? p.stock ?? 0;
     const th = p.reorder_point ?? p.alert_threshold ?? 10;
-    if (s <= th) alerts.push({ id: `stock-${p.id}`, icon: '📦', text: `Stock bas: ${p.name} (${s}u)`, color: 'text-amber-400', bg: 'bg-amber-500/10' });
+    if (s <= th) alerts.push({ id: `stock-${p.id}`, icon: '📦', text: `Stock bas: ${p.name} (${s}u restants)`, color: 'text-amber-400', bg: 'bg-amber-500/10' });
   });
 
   const today = new Date().toISOString().split('T')[0];

@@ -2,7 +2,7 @@ import React from 'react';
 import { AlertTriangle } from 'lucide-react';
 
 export default function LowStockAlert({ products }) {
-  const lowStock = products.filter(p => p.stock <= (p.alert_threshold || 10));
+  const lowStock = products.filter(p => (p.stock_qty ?? p.stock ?? 0) <= (p.reorder_point ?? p.alert_threshold ?? 10));
 
   if (lowStock.length === 0) return null;
 
@@ -17,7 +17,7 @@ export default function LowStockAlert({ products }) {
           <div key={p.id} className="flex justify-between items-center">
             <span className="text-sm text-foreground">{p.name}</span>
             <span className="text-xs text-red-400 bg-red-400/10 px-2 py-1 rounded-full">
-              {p.stock} restant{p.stock > 1 ? 's' : ''}
+              {p.stock_qty ?? p.stock ?? 0} restant{(p.stock_qty ?? p.stock ?? 0) > 1 ? 's' : ''}
             </span>
           </div>
         ))}

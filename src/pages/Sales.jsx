@@ -39,7 +39,7 @@ export default function Sales() {
     if (existing) {
       setCart(cart.map(c => c.id === product.id ? { ...c, qty: c.qty + 1 } : c));
     } else {
-      setCart([...cart, { id: product.id, name: product.name, price: product.price, cost: product.cost || 0, qty: 1, stock: product.stock }]);
+      setCart([...cart, { id: product.id, name: product.name, price: product.price_usd || product.price || 0, cost: product.cost_price || product.cost || 0, qty: 1, stock: product.stock_qty ?? product.stock ?? 0 }]);
     }
   };
 
@@ -54,6 +54,7 @@ export default function Sales() {
       const saleData = {
         product_id: item.id,
         product_name: item.name,
+        client_id: clients.find(c => c.name === selectedClient)?.id || '',
         client_name: selectedClient || 'Client anonyme',
         quantity: item.qty,
         unit_price: item.price,
@@ -66,7 +67,8 @@ export default function Sales() {
       // Update stock
       const product = products.find(p => p.id === item.id);
       if (product) {
-        await updateProductMutation.mutateAsync({ id: product.id, data: { stock: Math.max(0, (product.stock || 0) - item.qty) } });
+      const currentStock = product.stock_qty ?? product.stock ?? 0;
+      await updateProductMutation.mutateAsync({ id: product.id, data: { stock_qty: Math.max(0, currentStock - item.qty) } });
       }
     }
     setCart([]);
@@ -115,9 +117,9 @@ export default function Sales() {
                   <h3 className="font-medium text-sm">{p.name}</h3>
                   <p className="text-xs text-muted-foreground">{p.type}</p>
                   <div className="flex justify-between items-center mt-2">
-                    <span className="text-primary font-bold text-sm">${p.price?.toFixed(2)}</span>
-                    <Badge className={`text-xs ${(p.stock || 0) <= (p.alert_threshold || 10) ? 'bg-red-500/10 text-red-400' : 'bg-green-500/10 text-green-400'}`}>
-                      {p.stock || 0}u
+                    <span className="text-primary font-bold text-sm">${(p.price_usd || p.price || 0).toFixed(2)}</span>
+                    <Badge className={`text-xs ${(p.stock_qty ?? p.stock ?? 0) <= (p.reorder_point ?? p.alert_threshold ?? 10) ? 'bg-red-500/10 text-red-400' : 'bg-green-500/10 text-green-400'}`}>
+                      {p.stock_qty ?? p.stock ?? 0}u
                     </Badge>
                   </div>
                 </button>

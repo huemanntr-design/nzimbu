@@ -4,11 +4,11 @@ import { ShoppingCart, Package, BarChart3, Megaphone, Receipt, FileText } from '
 
 const actions = [
   { label: 'Nouvelle Vente', icon: ShoppingCart, color: 'bg-blue-500 hover:bg-blue-600', path: '/sales' },
-  { label: 'Nouveau Produit', icon: Package, color: 'bg-green-500 hover:bg-green-600', path: '/products' },
+  { label: 'Nouveau Produit', icon: Package, color: 'bg-green-500 hover:bg-green-600', path: '/stock' },
   { label: 'Rapport', icon: BarChart3, color: 'bg-yellow-500 hover:bg-yellow-600', path: '/accounting' },
   { label: 'Nouveau Post', icon: Megaphone, color: 'bg-purple-500 hover:bg-purple-600', path: '/marketing' },
   { label: 'Nouvelle Dépense', icon: Receipt, color: 'bg-red-500 hover:bg-red-600', path: '/accounting' },
-  { label: 'Facture', icon: FileText, color: 'bg-gray-500 hover:bg-gray-600', path: '/sales' },
+  { label: 'Facture', icon: FileText, color: 'bg-gray-500 hover:bg-gray-600', path: '/invoices' },
 ];
 
 export default function QuickActions() {

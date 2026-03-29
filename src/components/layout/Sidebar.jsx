@@ -4,7 +4,7 @@ import {
   Home, ShoppingBag, Users,
   Megaphone, FileText, MessageCircle,
   Landmark, Package, ChevronLeft, ChevronRight, Settings,
-  Wallet, BookOpen
+  Wallet, BookOpen, TrendingUp
 } from 'lucide-react';
 
 const navItems = [
@@ -15,6 +15,7 @@ const navItems = [
   { path: '/messagerie', icon: MessageCircle, label: 'Messagerie' },
   { path: '/accounting', icon: Landmark, label: 'Comptabilité' },
   { path: '/sales', icon: ShoppingBag, label: 'Ventes' },
+  { path: '/marketing', icon: TrendingUp, label: 'Marketing' },
   { path: '/finance-perso', icon: Wallet, label: 'Finance Perso' },
   { path: '/business-plan', icon: BookOpen, label: 'Business Plan' },
   { path: '/assistant', icon: Megaphone, label: 'Assistant IA' },

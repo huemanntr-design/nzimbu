@@ -3,19 +3,21 @@ import { Link, useLocation } from 'react-router-dom';
 import { 
   Home, ShoppingBag, Users, DollarSign, 
   BarChart3, Megaphone, FileText, MessageCircle,
-  Landmark, Package, ChevronLeft, ChevronRight
+  Landmark, Package, ChevronLeft, ChevronRight, Settings
 } from 'lucide-react';
 
 const navItems = [
   { path: '/', icon: Home, label: 'Tableau de Bord' },
-  { path: '/sales', icon: ShoppingBag, label: 'Ventes & POS' },
-  { path: '/products', icon: Package, label: 'Produits & Stock' },
   { path: '/clients', icon: Users, label: 'Clients' },
-  { path: '/accounting', icon: DollarSign, label: 'Comptabilité' },
-  { path: '/finance', icon: Landmark, label: 'Finance Perso' },
-  { path: '/marketing', icon: Megaphone, label: 'Marketing' },
-  { path: '/business-plan', icon: FileText, label: 'Business Plan' },
-  { path: '/assistant', icon: MessageCircle, label: 'Assistant IA' },
+  { path: '/invoices', icon: FileText, label: 'Factures' },
+  { path: '/stock', icon: Package, label: 'Stock' },
+  { path: '/messagerie', icon: MessageCircle, label: 'Messagerie' },
+  { path: '/taux', icon: DollarSign, label: 'Taux de Change' },
+  { path: '/rapports', icon: BarChart3, label: 'Rapports' },
+  { path: '/accounting', icon: Landmark, label: 'Comptabilité' },
+  { path: '/sales', icon: ShoppingBag, label: 'Ventes' },
+  { path: '/assistant', icon: Megaphone, label: 'Assistant IA' },
+  { path: '/parametres', icon: Settings, label: 'Paramètres' },
 ];
 
 export default function Sidebar({ collapsed, onToggle }) {

@@ -38,6 +38,16 @@ export default function Parametres() {
     setTimeout(() => setSaved(false), 2000);
   };
 
+  const notifItems = [
+    { key: 'lowStock', icon: '📦', label: 'Stock bas', desc: 'Alerte quand un produit est sous le seuil de réapprovisionnement' },
+    { key: 'overdueInvoice', icon: '📄', label: 'Factures en retard', desc: 'Rappel pour les factures échues non payées' },
+    { key: 'newPayment', icon: '💳', label: 'Nouveau paiement', desc: 'Notification à chaque paiement reçu' },
+    { key: 'newClient', icon: '👤', label: 'Nouveau client', desc: 'Alerte quand un nouveau client est ajouté' },
+    { key: 'lowMargin', icon: '📉', label: 'Marge faible', desc: "Alerte si la marge d'un produit passe sous 10%" },
+    { key: 'highCredit', icon: '⚠️', label: 'Crédit élevé', desc: 'Client qui dépasse sa limite de crédit' },
+    { key: 'dailySummary', icon: '📊', label: 'Résumé journalier', desc: 'Bilan quotidien des ventes et dépenses' },
+  ];
+
   return (
     <div>
       <PageHeader
@@ -51,6 +61,7 @@ export default function Parametres() {
       />
 
       <div className="space-y-4">
+        {/* User info */}
         {user && (
           <div className="bg-card border border-border rounded-xl p-4">
             <p className="text-xs text-muted-foreground uppercase tracking-widest mb-3">{t('account')}</p>
@@ -87,7 +98,6 @@ export default function Parametres() {
               />
             </div>
           ))}
-          {/* Currency */}
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">{t('currency')}</label>
             <select className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none">
@@ -100,6 +110,7 @@ export default function Parametres() {
         {/* Notifications */}
         <div className="bg-card border border-border rounded-xl p-4 space-y-4">
           <p className="text-xs text-muted-foreground uppercase tracking-widest">{t('notifications')}</p>
+
           <div className="bg-muted/50 rounded-xl p-3">
             <p className="text-xs font-semibold mb-2">🔔 {t('notif_frequency')}</p>
             <div className="grid grid-cols-3 gap-2">
@@ -108,5 +119,102 @@ export default function Parametres() {
                 { val: 'daily', label: t('daily'), icon: '📅' },
                 { val: 'weekly', label: t('weekly'), icon: '📆' },
               ].map(f => (
-                <button key={f.val} onClick={() => setNotifications(n => ({ ...n, frequency: f.val }))}
-                  className={`py-2 rounded-xl text-xs font-medium transition-colors ${notifications.frequency === f.val ? 'bg-primary text-white' : 'bg-muted text-m
+                <button
+                  key={f.val}
+                  onClick={() => setNotifications(n => ({ ...n, frequency: f.val }))}
+                  className={`py-2 rounded-xl text-xs font-medium transition-colors ${notifications.frequency === f.val ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:text-foreground'}`}
+                >
+                  {f.icon} {f.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {notifItems.map(({ key, icon, label, desc }) => (
+            <div key={key} className="flex items-center justify-between py-1">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <span className="text-xl shrink-0">{icon}</span>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium">{label}</p>
+                  <p className="text-xs text-muted-foreground truncate">{desc}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setNotifications(n => ({ ...n, [key]: !n[key] }))}
+                className={`ml-3 w-11 h-6 rounded-full transition-colors shrink-0 relative ${notifications[key] ? 'bg-primary' : 'bg-muted'}`}
+              >
+                <span className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${notifications[key] ? 'left-6' : 'left-1'}`} />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Taux de Change */}
+        <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground uppercase tracking-widest">{t('exchange_rate')}</p>
+            <Button size="sm" className="h-7 text-xs bg-primary hover:bg-primary/90 border-0" onClick={() => setShowTauxForm(true)}>
+              <Plus size={12} /> {t('enter_rate')}
+            </Button>
+          </div>
+          {latest && (
+            <div className="bg-muted/50 rounded-xl p-3">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-lg font-bold">{latest.rate_cdf_per_usd?.toLocaleString('fr-FR')} CDF <span className="text-xs text-muted-foreground">= 1 USD</span></p>
+                  <p className="text-xs text-muted-foreground">{latest.date} · {latest.source}</p>
+                </div>
+                {delta !== 0 && (
+                  <span className={`flex items-center gap-1 text-xs font-medium ${delta > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                    {delta > 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                    {delta > 0 ? '+' : ''}{delta.toFixed(0)}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+          {showTauxForm && (
+            <div className="grid grid-cols-2 gap-2">
+              <input type="date" value={tauxForm.date} onChange={e => setTauxForm(f => ({ ...f, date: e.target.value }))}
+                className="bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground col-span-2 focus:outline-none" />
+              <input type="number" placeholder="Taux moyen CDF/USD *" value={tauxForm.rate_cdf_per_usd} onChange={e => setTauxForm(f => ({ ...f, rate_cdf_per_usd: e.target.value }))}
+                className="bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground col-span-2 focus:outline-none" />
+              <input type="number" placeholder="Achat" value={tauxForm.buying} onChange={e => setTauxForm(f => ({ ...f, buying: e.target.value }))}
+                className="bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none" />
+              <input type="number" placeholder="Vente" value={tauxForm.selling} onChange={e => setTauxForm(f => ({ ...f, selling: e.target.value }))}
+                className="bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none" />
+              <div className="col-span-2 flex gap-2">
+                <Button size="sm" className="flex-1 bg-primary hover:bg-primary/90 border-0"
+                  onClick={() => tauxForm.rate_cdf_per_usd && createTauxMutation.mutate({ ...tauxForm, rate_cdf_per_usd: +tauxForm.rate_cdf_per_usd, buying: +tauxForm.buying || +tauxForm.rate_cdf_per_usd - 10, selling: +tauxForm.selling || +tauxForm.rate_cdf_per_usd + 10 })}
+                  disabled={createTauxMutation.isPending}>{t('register')}</Button>
+                <Button size="sm" variant="outline" onClick={() => setShowTauxForm(false)}>{t('cancel')}</Button>
+              </div>
+            </div>
+          )}
+          <div className="space-y-1">
+            {rates.slice(0, 5).map(r => (
+              <div key={r.id} className="flex justify-between text-xs">
+                <span className="text-muted-foreground">{r.date}</span>
+                <span className="font-medium">{r.rate_cdf_per_usd?.toLocaleString('fr-FR')} CDF</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* WhatsApp API */}
+        <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+          <p className="text-xs text-muted-foreground uppercase tracking-widest">{t('whatsapp')}</p>
+          <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3">
+            <p className="text-xs text-green-400 font-medium">{t('wa_active')}</p>
+            <p className="text-xs text-muted-foreground mt-1">{t('wa_desc')}</p>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">{t('wa_number')}</label>
+            <input placeholder="+243 8X XXX XXXX"
+              className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground focus:outline-none" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

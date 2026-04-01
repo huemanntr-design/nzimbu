@@ -9,9 +9,20 @@ import LowStockAlert from '../components/dashboard/LowStockAlert';
 import { Link } from 'react-router-dom';
 import { useLang } from '@/lib/LanguageContext';
 
+const USD_TO_FC = 2800;
+
+const QUOTES = [
+  'Mosala ezali nzela ya bomoi',
+  'Mbongo euti na misato',
+  'Biso nyonso tozali bato ya misota',
+];
+
 export default function Dashboard() {
   const [user, setUser] = useState(null);
+  const [currency, setCurrency] = useState('USD');
   const { t } = useLang();
+
+  const dailyQuote = QUOTES[new Date().getDate() % QUOTES.length];
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -32,38 +43,59 @@ export default function Dashboard() {
     queryFn: () => base44.entities.Product.list(),
   });
 
-  const totalRevenue = sales.reduce((sum, s) => sum + (s.total || 0), 0);
-  const totalExpenses = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
-  const totalProfit = totalRevenue - totalExpenses;
+  const totalRevenueUSD = sales.reduce((sum, s) => sum + (s.total || 0), 0);
+  const totalExpensesUSD = expenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+  const totalProfitUSD = totalRevenueUSD - totalExpensesUSD;
   const lowStockCount = products.filter(p => (p.stock_qty ?? p.stock ?? 0) <= (p.reorder_point ?? p.alert_threshold ?? 10)).length;
+
+  const fmt = (usd) => {
+    if (currency === 'FC') {
+      return `${(usd * USD_TO_FC).toLocaleString('fr-FR')} FC`;
+    }
+    return `$${usd.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}`;
+  };
 
   const now = new Date();
   const dateStr = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
   return (
     <div className="space-y-6">
+      {/* Lingala Quote */}
+      <div className="bg-primary/10 border border-primary/20 rounded-xl px-5 py-3 flex items-center gap-3">
+        <span className="text-2xl">🇨🇩</span>
+        <p className="text-sm font-medium text-primary italic">"{dailyQuote}"</p>
+      </div>
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
         <div>
-          <p className="text-sm text-muted-foreground">👋 {t('lang_fr') === 'Français' ? 'Bienvenue' : 'Welcome'}</p>
+          <p className="text-sm text-muted-foreground">👋 {t('welcome')}</p>
           <h1 className="text-2xl font-bold text-foreground">{user?.full_name || t('nav_dashboard')}</h1>
           <p className="text-xs text-muted-foreground capitalize">{dateStr}</p>
         </div>
-        <div className="flex gap-2">
-          <button className="bg-primary text-primary-foreground text-xs px-4 py-2 rounded-lg font-medium">Tout</button>
-          <button className="bg-secondary text-muted-foreground text-xs px-4 py-2 rounded-lg">Aujourd'hui</button>
-          <button className="bg-secondary text-muted-foreground text-xs px-4 py-2 rounded-lg">7 Jours</button>
-          <button className="bg-secondary text-muted-foreground text-xs px-4 py-2 rounded-lg">30 Jours</button>
+        <div className="flex items-center gap-2">
+          {/* Currency Toggle */}
+          <div className="flex bg-secondary rounded-lg p-1 gap-1">
+            {['USD', 'FC'].map(c => (
+              <button
+                key={c}
+                onClick={() => setCurrency(c)}
+                className={`text-xs px-3 py-1.5 rounded-md font-bold transition-colors ${currency === c ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                {c === 'USD' ? '$ USD' : 'FC'}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Revenue Header */}
-      <RevenueHeader revenue={totalRevenue} goal={2000} businessName="Mon Entreprise" />
+      <RevenueHeader revenue={totalRevenueUSD} goal={2000} businessName="Mon Entreprise" currency={currency} usdToFc={USD_TO_FC} />
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <KpiCard icon="💸" value={`$${totalExpenses.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}`} label={t('expenses')} trend="↘ +5.1%" trendColor="text-red-400" />
-        <KpiCard icon="✨" value={`$${totalProfit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}`} label={t('net_profit')} trend="↗ +23.7%" trendColor="text-green-400" />
+        <KpiCard icon="💸" value={fmt(totalExpensesUSD)} label={t('expenses')} trend="↘ +5.1%" trendColor="text-red-400" />
+        <KpiCard icon="✨" value={fmt(totalProfitUSD)} label={t('net_profit')} trend="↗ +23.7%" trendColor="text-green-400" />
         <KpiCard icon="📦" value={sales.length} label={t('sales')} trend="↗ +12%" />
         <KpiCard icon="⚠️" value={lowStockCount} label={t('low_stock')} trendColor="text-yellow-400" />
       </div>
@@ -71,7 +103,7 @@ export default function Dashboard() {
       {/* Summary */}
       <div className="flex items-center justify-center">
         <Link to="/accounting" className="bg-secondary text-foreground text-sm px-6 py-3 rounded-lg font-medium hover:bg-secondary/80 transition-colors flex items-center gap-2">
-          📊 Voir l'analyse complète →
+          📊 {t('see_full_analysis')} →
         </Link>
       </div>
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import NotificationBell from './NotificationBell';
+import { useLang } from '@/lib/LanguageContext';
 import { 
   Home, ShoppingBag, Users,
   Megaphone, FileText, MessageCircle,
@@ -8,23 +9,30 @@ import {
   Wallet, BookOpen, TrendingUp
 } from 'lucide-react';
 
-const navItems = [
-  { path: '/', icon: Home, label: 'Tableau de Bord' },
-  { path: '/clients', icon: Users, label: 'Clients' },
-  { path: '/invoices', icon: FileText, label: 'Factures' },
-  { path: '/stock', icon: Package, label: 'Stock' },
-  { path: '/messagerie', icon: MessageCircle, label: 'Messagerie' },
-  { path: '/accounting', icon: Landmark, label: 'Comptabilité' },
-  { path: '/sales', icon: ShoppingBag, label: 'Ventes' },
-  { path: '/marketing', icon: TrendingUp, label: 'Marketing' },
-  { path: '/finance-perso', icon: Wallet, label: 'Finance Perso' },
-  { path: '/business-plan', icon: BookOpen, label: 'Business Plan' },
-  { path: '/assistant', icon: Megaphone, label: 'Assistant IA' },
-  { path: '/parametres', icon: Settings, label: 'Paramètres' },
+const LANGS = [
+  { code: 'fr', flag: '🇫🇷', label: 'FR' },
+  { code: 'en', flag: '🇬🇧', label: 'EN' },
+  { code: 'ln', flag: '🇨🇩', label: 'LN' },
 ];
 
 export default function Sidebar({ collapsed, onToggle }) {
   const location = useLocation();
+  const { t, lang, switchLang } = useLang();
+
+  const navItems = [
+    { path: '/', icon: Home, label: t('nav_dashboard') },
+    { path: '/clients', icon: Users, label: t('nav_clients') },
+    { path: '/invoices', icon: FileText, label: t('nav_invoices') },
+    { path: '/stock', icon: Package, label: t('nav_stock') },
+    { path: '/messagerie', icon: MessageCircle, label: t('nav_messaging') },
+    { path: '/accounting', icon: Landmark, label: t('nav_accounting') },
+    { path: '/sales', icon: ShoppingBag, label: t('nav_sales') },
+    { path: '/marketing', icon: TrendingUp, label: t('nav_marketing') },
+    { path: '/finance-perso', icon: Wallet, label: t('nav_finance') },
+    { path: '/business-plan', icon: BookOpen, label: t('nav_business_plan') },
+    { path: '/assistant', icon: Megaphone, label: t('nav_assistant') },
+    { path: '/parametres', icon: Settings, label: t('nav_settings') },
+  ];
 
   return (
     <aside className={`fixed left-0 top-0 h-full bg-card border-r border-border z-40 transition-all duration-300 flex flex-col ${collapsed ? 'w-16' : 'w-56'}`}>
@@ -58,6 +66,24 @@ export default function Sidebar({ collapsed, onToggle }) {
           );
         })}
       </nav>
+
+      {/* Language Switcher */}
+      <div className={`px-2 pb-2 ${collapsed ? 'flex flex-col gap-1 items-center' : 'flex gap-1'}`}>
+        {LANGS.map(l => (
+          <button
+            key={l.code}
+            onClick={() => switchLang(l.code)}
+            title={l.label}
+            className={`flex-1 rounded-lg py-1 text-xs font-bold transition-colors ${
+              lang === l.code
+                ? 'bg-primary text-white'
+                : 'bg-muted text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {collapsed ? l.flag : `${l.flag} ${l.label}`}
+          </button>
+        ))}
+      </div>
 
       {/* Notification Bell */}
       <NotificationBell collapsed={collapsed} />

@@ -7,9 +7,11 @@ import WeeklyChart from '../components/dashboard/WeeklyChart';
 import QuickActions from '../components/dashboard/QuickActions';
 import LowStockAlert from '../components/dashboard/LowStockAlert';
 import { Link } from 'react-router-dom';
+import { useLang } from '@/lib/LanguageContext';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
+  const { t } = useLang();
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => {});
@@ -43,8 +45,8 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
         <div>
-          <p className="text-sm text-muted-foreground">Bienvenue 👋</p>
-          <h1 className="text-2xl font-bold text-foreground">{user?.full_name || 'Utilisateur'}</h1>
+          <p className="text-sm text-muted-foreground">👋 {t('lang_fr') === 'Français' ? 'Bienvenue' : 'Welcome'}</p>
+          <h1 className="text-2xl font-bold text-foreground">{user?.full_name || t('nav_dashboard')}</h1>
           <p className="text-xs text-muted-foreground capitalize">{dateStr}</p>
         </div>
         <div className="flex gap-2">
@@ -60,10 +62,10 @@ export default function Dashboard() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <KpiCard icon="💸" value={`$${totalExpenses.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}`} label="Dépenses" trend="↘ +5.1%" trendColor="text-red-400" />
-        <KpiCard icon="✨" value={`$${totalProfit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}`} label="Bénéfice" trend="↗ +23.7%" trendColor="text-green-400" />
-        <KpiCard icon="📦" value={sales.length} label="Nb de Ventes" trend="↗ +12%" />
-        <KpiCard icon="⚠️" value={lowStockCount} label="Produits en Rupture" trendColor="text-yellow-400" />
+        <KpiCard icon="💸" value={`$${totalExpenses.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}`} label={t('expenses')} trend="↘ +5.1%" trendColor="text-red-400" />
+        <KpiCard icon="✨" value={`$${totalProfit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}`} label={t('net_profit')} trend="↗ +23.7%" trendColor="text-green-400" />
+        <KpiCard icon="📦" value={sales.length} label={t('sales')} trend="↗ +12%" />
+        <KpiCard icon="⚠️" value={lowStockCount} label={t('low_stock')} trendColor="text-yellow-400" />
       </div>
 
       {/* Summary */}

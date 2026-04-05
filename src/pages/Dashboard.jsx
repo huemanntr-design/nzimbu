@@ -8,8 +8,8 @@ import QuickActions from '../components/dashboard/QuickActions';
 import LowStockAlert from '../components/dashboard/LowStockAlert';
 import { Link } from 'react-router-dom';
 import { useLang } from '@/lib/LanguageContext';
-
-const USD_TO_FC = 2800;
+import ExchangeRateWidget from '../components/currency/ExchangeRateWidget';
+import { formatDual, usdToCents } from '@/utils/currency';
 
 const QUOTES = [
   'Mosala ezali nzela ya bomoi',
@@ -19,13 +19,16 @@ const QUOTES = [
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
-  const [currency, setCurrency] = useState('USD');
+  const [rate, setRate] = useState(2500);
   const { t } = useLang();
 
   const dailyQuote = QUOTES[new Date().getDate() % QUOTES.length];
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => {});
+    base44.auth.me().then(u => {
+      setUser(u);
+      if (u?.exchange_rate) setRate(u.exchange_rate);
+    }).catch(() => {});
   }, []);
 
   const { data: sales = [] } = useQuery({
@@ -48,12 +51,7 @@ export default function Dashboard() {
   const totalProfitUSD = totalRevenueUSD - totalExpensesUSD;
   const lowStockCount = products.filter(p => (p.stock_qty ?? p.stock ?? 0) <= (p.reorder_point ?? p.alert_threshold ?? 10)).length;
 
-  const fmt = (usd) => {
-    if (currency === 'FC') {
-      return `${(usd * USD_TO_FC).toLocaleString('fr-FR')} FC`;
-    }
-    return `$${usd.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}`;
-  };
+  const fmtDual = (usd) => formatDual(usdToCents(usd), rate);
 
   const now = new Date();
   const dateStr = now.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -73,29 +71,18 @@ export default function Dashboard() {
           <h1 className="text-2xl font-bold text-foreground">{user?.full_name || t('nav_dashboard')}</h1>
           <p className="text-xs text-muted-foreground capitalize">{dateStr}</p>
         </div>
-        <div className="flex items-center gap-2">
-          {/* Currency Toggle */}
-          <div className="flex bg-secondary rounded-lg p-1 gap-1">
-            {['USD', 'FC'].map(c => (
-              <button
-                key={c}
-                onClick={() => setCurrency(c)}
-                className={`text-xs px-3 py-1.5 rounded-md font-bold transition-colors ${currency === c ? 'bg-primary text-white' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                {c === 'USD' ? '$ USD' : 'FC'}
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
 
+      {/* Exchange Rate Widget */}
+      <ExchangeRateWidget rate={rate} onRateChange={setRate} />
+
       {/* Revenue Header */}
-      <RevenueHeader revenue={totalRevenueUSD} goal={2000} businessName="Mon Entreprise" currency={currency} usdToFc={USD_TO_FC} />
+      <RevenueHeader revenue={totalRevenueUSD} goal={2000} businessName="Mon Entreprise" currency="USD" usdToFc={rate} />
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <KpiCard icon="💸" value={fmt(totalExpensesUSD)} label={t('expenses')} trend="↘ +5.1%" trendColor="text-red-400" />
-        <KpiCard icon="✨" value={fmt(totalProfitUSD)} label={t('net_profit')} trend="↗ +23.7%" trendColor="text-green-400" />
+        <KpiCard icon="💸" value={fmtDual(totalExpensesUSD)} label={t('expenses')} trend="↘ +5.1%" trendColor="text-red-400" />
+        <KpiCard icon="✨" value={fmtDual(totalProfitUSD)} label={t('net_profit')} trend="↗ +23.7%" trendColor="text-green-400" />
         <KpiCard icon="📦" value={sales.length} label={t('sales')} trend="↗ +12%" />
         <KpiCard icon="⚠️" value={lowStockCount} label={t('low_stock')} trendColor="text-yellow-400" />
       </div>

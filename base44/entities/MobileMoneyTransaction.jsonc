@@ -1,0 +1,67 @@
+{
+  "name": "MobileMoneyTransaction",
+  "type": "object",
+  "properties": {
+    "provider": {
+      "type": "string",
+      "enum": [
+        "mpesa",
+        "airtel",
+        "orange"
+      ],
+      "description": "Mobile money provider"
+    },
+    "phone_number": {
+      "type": "string",
+      "description": "Customer phone number +243XXXXXXXXX"
+    },
+    "amount_usd_cents": {
+      "type": "number",
+      "description": "Amount in USD cents"
+    },
+    "amount_cdf": {
+      "type": "number",
+      "description": "Amount in CDF"
+    },
+    "exchange_rate_used": {
+      "type": "number",
+      "description": "CDF per USD rate at time of transaction"
+    },
+    "transaction_reference": {
+      "type": "string",
+      "description": "Transaction reference code"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "failed",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "linked_sale_id": {
+      "type": "string",
+      "description": "Optional linked sale ID"
+    },
+    "linked_credit_id": {
+      "type": "string",
+      "description": "Optional linked credit ID"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "client_phone": {
+      "type": "string"
+    },
+    "note": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "provider",
+    "phone_number",
+    "amount_usd_cents"
+  ]
+}

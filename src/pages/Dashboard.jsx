@@ -94,10 +94,35 @@ export default function Dashboard() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <KpiCard icon="💸" value={fmt(totalExpensesUSD)} label={t('expenses')} trend="↘ +5.1%" trendColor="text-red-400" />
-        <KpiCard icon="✨" value={fmt(totalProfitUSD)} label={t('net_profit')} trend="↗ +23.7%" trendColor="text-green-400" />
-        <KpiCard icon="📦" value={sales.length} label={t('sales')} trend="↗ +12%" />
-        <KpiCard icon="⚠️" value={lowStockCount} label={t('low_stock')} trendColor="text-yellow-400" />
+        <KpiCard icon="💸" value={fmt(totalExpensesUSD)} label={t('expenses')} trend="↘ +5.1%" trendColor="text-red-400"
+          details={[
+            { label: 'Total dépenses', value: fmt(totalExpensesUSD), color: 'text-red-400' },
+            { label: 'Nb postes', value: expenses.length },
+            { label: 'En % des revenus', value: `${totalRevenueUSD > 0 ? ((totalExpensesUSD / totalRevenueUSD) * 100).toFixed(1) : 0}%` },
+            { label: 'Voir détails', value: '→ Comptabilité' },
+          ]} />
+        <KpiCard icon="✨" value={fmt(totalProfitUSD)} label={t('net_profit')} trend="↗ +23.7%" trendColor="text-green-400"
+          details={[
+            { label: 'Revenus', value: fmt(totalRevenueUSD), color: 'text-green-400' },
+            { label: 'Dépenses', value: fmt(totalExpensesUSD), color: 'text-red-400' },
+            { label: 'Profit net', value: fmt(totalProfitUSD), color: totalProfitUSD >= 0 ? 'text-green-400' : 'text-red-400' },
+            { label: 'Marge nette', value: `${totalRevenueUSD > 0 ? ((totalProfitUSD / totalRevenueUSD) * 100).toFixed(1) : 0}%` },
+          ]} />
+        <KpiCard icon="📦" value={sales.length} label={t('sales')} trend="↗ +12%"
+          details={[
+            { label: 'Total ventes', value: sales.length },
+            { label: 'Revenus', value: fmt(totalRevenueUSD), color: 'text-green-400' },
+            { label: 'Vente moyenne', value: fmt(sales.length > 0 ? totalRevenueUSD / sales.length : 0) },
+            { label: 'Cash', value: sales.filter(s => s.payment_method === 'cash').length },
+            { label: 'Mobile Money', value: sales.filter(s => ['mpesa','airtel','orange','mobile_money'].includes(s.payment_method)).length },
+          ]} />
+        <KpiCard icon="⚠️" value={lowStockCount} label={t('low_stock')} trendColor="text-yellow-400"
+          details={[
+            { label: 'Produits en alerte', value: lowStockCount, color: lowStockCount > 0 ? 'text-yellow-400' : 'text-green-400' },
+            { label: 'Total produits', value: products.length },
+            { label: 'Stocks OK', value: products.length - lowStockCount, color: 'text-green-400' },
+            { label: 'Action', value: '→ Gérer le stock' },
+          ]} />
       </div>
 
       {/* Summary */}

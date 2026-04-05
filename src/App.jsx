@@ -17,9 +17,7 @@ import Finance from './pages/Finance';
 import Marketing from './pages/Marketing';
 import BusinessPlan from './pages/BusinessPlan';
 import Assistant from './pages/Assistant';
-import Invoices from './pages/Invoices.jsx';
 import Stock from './pages/Stock.jsx';
-import Messagerie from './pages/Messagerie.jsx';
 import Parametres from './pages/Parametres.jsx';
 import FinancePerso from './pages/FinancePerso.jsx';
 
@@ -60,9 +58,7 @@ const AuthenticatedApp = () => {
         <Route path="/marketing" element={<Marketing />} />
         <Route path="/business-plan" element={<BusinessPlan />} />
         <Route path="/assistant" element={<Assistant />} />
-        <Route path="/invoices" element={<Invoices />} />
         <Route path="/stock" element={<Stock />} />
-        <Route path="/messagerie" element={<Messagerie />} />
         <Route path="/parametres" element={<Parametres />} />
         <Route path="/finance-perso" element={<FinancePerso />} />
       </Route>

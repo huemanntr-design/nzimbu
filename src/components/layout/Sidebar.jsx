@@ -4,7 +4,7 @@ import NotificationBell from './NotificationBell';
 import { useLang } from '@/lib/LanguageContext';
 import { 
   Home, ShoppingBag, Users,
-  Megaphone, FileText, MessageCircle,
+  Megaphone,
   Landmark, Package, ChevronLeft, ChevronRight, Settings,
   Wallet, BookOpen, TrendingUp
 } from 'lucide-react';
@@ -21,12 +21,10 @@ export default function Sidebar({ collapsed, onToggle }) {
 
   const navItems = [
     { path: '/', icon: Home, label: t('nav_dashboard') },
-    { path: '/clients', icon: Users, label: t('nav_clients') },
-    { path: '/invoices', icon: FileText, label: t('nav_invoices') },
-    { path: '/stock', icon: Package, label: t('nav_stock') },
-    { path: '/messagerie', icon: MessageCircle, label: t('nav_messaging') },
-    { path: '/accounting', icon: Landmark, label: t('nav_accounting') },
     { path: '/sales', icon: ShoppingBag, label: t('nav_sales') },
+    { path: '/clients', icon: Users, label: t('nav_clients') },
+    { path: '/stock', icon: Package, label: t('nav_stock') },
+    { path: '/accounting', icon: Landmark, label: t('nav_accounting') },
     { path: '/marketing', icon: TrendingUp, label: t('nav_marketing') },
     { path: '/finance-perso', icon: Wallet, label: t('nav_finance') },
     { path: '/business-plan', icon: BookOpen, label: t('nav_business_plan') },

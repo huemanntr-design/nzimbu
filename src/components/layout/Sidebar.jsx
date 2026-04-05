@@ -6,7 +6,7 @@ import {
   Home, ShoppingBag, Users,
   Megaphone, FileText, MessageCircle,
   Landmark, Package, ChevronLeft, ChevronRight, Settings,
-  Wallet, BookOpen, TrendingUp, CreditCard, BookOpenCheck
+  Wallet, BookOpen, TrendingUp
 } from 'lucide-react';
 
 const LANGS = [
@@ -30,8 +30,6 @@ export default function Sidebar({ collapsed, onToggle }) {
     { path: '/marketing', icon: TrendingUp, label: t('nav_marketing') },
     { path: '/finance-perso', icon: Wallet, label: t('nav_finance') },
     { path: '/business-plan', icon: BookOpen, label: t('nav_business_plan') },
-    { path: '/mobile-money', icon: CreditCard, label: '💳 Mobile Money' },
-    { path: '/caisse', icon: BookOpenCheck, label: '📒 Caisse' },
     { path: '/assistant', icon: Megaphone, label: t('nav_assistant') },
     { path: '/parametres', icon: Settings, label: t('nav_settings') },
   ];

@@ -22,8 +22,6 @@ import Stock from './pages/Stock.jsx';
 import Messagerie from './pages/Messagerie.jsx';
 import Parametres from './pages/Parametres.jsx';
 import FinancePerso from './pages/FinancePerso.jsx';
-import MobileMoneyHub from './pages/MobileMoneyHub.jsx';
-import CaisseJournaliere from './pages/CaisseJournaliere.jsx';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -67,8 +65,6 @@ const AuthenticatedApp = () => {
         <Route path="/messagerie" element={<Messagerie />} />
         <Route path="/parametres" element={<Parametres />} />
         <Route path="/finance-perso" element={<FinancePerso />} />
-        <Route path="/mobile-money" element={<MobileMoneyHub />} />
-        <Route path="/caisse" element={<CaisseJournaliere />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

@@ -8,8 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Search, ShoppingCart, Plus, Minus, Trash2 } from 'lucide-react';
 import KpiCard from '../components/dashboard/KpiCard';
 import { useLang } from '@/lib/LanguageContext';
-import SaleSuccessModal from '../components/sales/SaleSuccessModal';
-import { useQuery as useUserQuery } from '@tanstack/react-query';
 
 export default function Sales() {
   const [tab, setTab] = useState('pos');
@@ -17,12 +15,8 @@ export default function Sales() {
   const [search, setSearch] = useState('');
   const [selectedClient, setSelectedClient] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('cash');
-  const [saleSuccess, setSaleSuccess] = useState(null);
   const queryClient = useQueryClient();
   const { t } = useLang();
-
-  const { data: user } = useUserQuery({ queryKey: ['me'], queryFn: () => base44.auth.me() });
-  const rate = user?.exchange_rate || 2500;
 
   const { data: products = [] } = useQuery({ queryKey: ['products'], queryFn: () => base44.entities.Product.list() });
   const { data: sales = [] } = useQuery({ queryKey: ['sales'], queryFn: () => base44.entities.Sale.list('-created_date', 50) });
@@ -78,7 +72,6 @@ export default function Sales() {
         await updateProductMutation.mutateAsync({ id: product.id, data: { stock_qty: Math.max(0, currentStock - item.qty) } });
       }
     }
-    setSaleSuccess({ items: [...cart], total: cartTotal, paymentMethod, clientPhone: clients.find(c => c.name === selectedClient)?.phone_wa || clients.find(c => c.name === selectedClient)?.phone || '' });
     setCart([]);
     setSelectedClient('');
   };
@@ -87,17 +80,6 @@ export default function Sales() {
 
   return (
     <div className="space-y-6">
-      {saleSuccess && (
-        <SaleSuccessModal
-          items={saleSuccess.items}
-          total={saleSuccess.total}
-          paymentMethod={saleSuccess.paymentMethod}
-          clientPhone={saleSuccess.clientPhone}
-          businessName={user?.full_name}
-          rate={rate}
-          onClose={() => setSaleSuccess(null)}
-        />
-      )}
       <div className="bg-card border border-border rounded-xl p-6">
         <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">{t('daily_objective')}</p>
         <h2 className="text-3xl font-bold">${totalRevenue.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}</h2>

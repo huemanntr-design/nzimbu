@@ -3,35 +3,29 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import BottomNav from './BottomNav';
 import MobileMoreDrawer from './MobileMoreDrawer';
-import { useViewMode } from '@/lib/ViewModeContext';
 
 export default function AppLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
-  const { mode } = useViewMode();
-
-  if (mode === 'phone') {
-    return (
-      <div className="min-h-screen bg-background max-w-sm mx-auto relative">
-        <main className="pb-20 pt-2">
-          <div className="px-4">
-            <Outlet />
-          </div>
-        </main>
-        <BottomNav onMore={() => setMoreOpen(true)} />
-        <MobileMoreDrawer open={moreOpen} onClose={() => setMoreOpen(false)} />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
-      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
-      <main className={`transition-all duration-300 ${collapsed ? 'ml-16' : 'ml-56'}`}>
-        <div className="p-6 max-w-[1400px] mx-auto">
+      {/* Desktop sidebar */}
+      <div className="hidden md:block">
+        <Sidebar collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
+      </div>
+
+      <main className={`transition-all duration-300 pb-16 md:pb-0 ${collapsed ? 'md:ml-16' : 'md:ml-56'}`}>
+        <div className="p-4 md:p-6 max-w-[1400px] mx-auto">
           <Outlet />
         </div>
       </main>
+
+      {/* Mobile bottom nav */}
+      <div className="md:hidden">
+        <BottomNav onMore={() => setMoreOpen(true)} />
+        <MobileMoreDrawer open={moreOpen} onClose={() => setMoreOpen(false)} />
+      </div>
     </div>
   );
 }

@@ -5,7 +5,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { LanguageProvider } from '@/lib/LanguageContext';
-import { ViewModeProvider } from '@/lib/ViewModeContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
 import AppLayout from './components/layout/AppLayout';
@@ -72,14 +71,12 @@ function App() {
   return (
     <AuthProvider>
       <LanguageProvider>
-      <ViewModeProvider>
       <QueryClientProvider client={queryClientInstance}>
           <Router>
             <AuthenticatedApp />
           </Router>
           <Toaster />
         </QueryClientProvider>
-        </ViewModeProvider>
       </LanguageProvider>
     </AuthProvider>
   )

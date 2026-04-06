@@ -88,5 +88,8 @@ module.exports = {
   		}
   	}
   },
+  safelist: [
+    'glass', 'glass-card', 'glass-sidebar', 'glass-nav', 'glass-active', 'glass-btn', 'drc-bg'
+  ],
   plugins: [require("tailwindcss-animate")],
 }

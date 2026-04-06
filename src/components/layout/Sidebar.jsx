@@ -2,11 +2,12 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import NotificationBell from './NotificationBell';
 import { useLang } from '@/lib/LanguageContext';
+import { useViewMode } from '@/lib/ViewModeContext';
 import { 
   Home, ShoppingBag, Users,
   Megaphone,
   Landmark, Package, ChevronLeft, ChevronRight, Settings,
-  Wallet, BookOpen, TrendingUp
+  Wallet, BookOpen, TrendingUp, Smartphone, Monitor
 } from 'lucide-react';
 
 const LANGS = [
@@ -18,6 +19,7 @@ const LANGS = [
 export default function Sidebar({ collapsed, onToggle }) {
   const location = useLocation();
   const { t, lang, switchLang } = useLang();
+  const { mode, toggle } = useViewMode();
 
   const navItems = [
     { path: '/', icon: Home, label: t('nav_dashboard') },
@@ -86,7 +88,18 @@ export default function Sidebar({ collapsed, onToggle }) {
       {/* Notification Bell */}
       <NotificationBell collapsed={collapsed} />
 
-      {/* Toggle */}
+      {/* View mode toggle */}
+      <button
+        onClick={toggle}
+        title={mode === 'desktop' ? 'Passer en mode téléphone' : 'Passer en mode bureau'}
+        className={`mx-2 mb-2 rounded-xl py-2 flex items-center justify-center gap-2 text-xs font-medium transition-colors
+          ${mode === 'phone' ? 'bg-primary/20 text-primary' : 'bg-secondary text-muted-foreground hover:text-foreground'}`}
+      >
+        {mode === 'phone' ? <Smartphone className="w-4 h-4" /> : <Monitor className="w-4 h-4" />}
+        {!collapsed && <span>{mode === 'phone' ? 'Mode Téléphone' : 'Mode Bureau'}</span>}
+      </button>
+
+      {/* Collapse Toggle */}
       <button
         onClick={onToggle}
         className="mx-auto mb-4 w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"

@@ -46,10 +46,33 @@ export default function Finance() {
     <div className="space-y-6">
       {/* Top KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <KpiCard icon="🇨🇩" value={`$${income.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}`} label="Revenus" trend="↗ +8%" trendColor="text-green-400" />
-        <KpiCard icon="💸" value={`$${expense.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}`} label="Dépensé" trend="↘ +3%" trendColor="text-red-400" />
-        <KpiCard icon="🏦" value={`${savings}%`} label="Épargne" trend="↗ +2%" />
-        <KpiCard icon="📱" value="+$320" label="M-PESA" />
+        <KpiCard icon="🇨🇩" value={`$${income.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}`} label="Revenus" trend="↗ +8%" trendColor="text-green-400"
+          details={[
+            { label: 'Total revenus', value: `$${income.toFixed(2)}`, color: 'text-green-400' },
+            { label: 'Nb transactions', value: transactions.filter(t => t.type === 'income').length },
+            { label: 'Solde net', value: `$${(income - expense).toFixed(2)}`, color: income - expense >= 0 ? 'text-green-400' : 'text-red-400' },
+          ]} />
+        <KpiCard icon="💸" value={`$${expense.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}`} label="Dépensé" trend="↘ +3%" trendColor="text-red-400"
+          details={[
+            { label: 'Total dépenses', value: `$${expense.toFixed(2)}`, color: 'text-red-400' },
+            { label: 'Nb transactions', value: transactions.filter(t => t.type === 'expense').length },
+            { label: 'Budget total', value: `$${totalBudget.toFixed(2)}` },
+            { label: 'Budget restant', value: `$${(totalBudget - totalSpent).toFixed(2)}`, color: (totalBudget - totalSpent) >= 0 ? 'text-green-400' : 'text-red-400' },
+          ]} />
+        <KpiCard icon="🏦" value={`${savings}%`} label="Épargne" trend="↗ +2%"
+          details={[
+            { label: 'Taux d\'épargne', value: `${savings}%`, color: savings >= 20 ? 'text-green-400' : 'text-yellow-400' },
+            { label: 'Objectif cible', value: '20%' },
+            { label: 'Montant épargné', value: `$${totalSaved.toFixed(2)}`, color: 'text-green-400' },
+            { label: 'Objectifs total', value: `$${totalGoals.toFixed(2)}` },
+          ]} />
+        <KpiCard icon="💰" value={`$${(totalDebt - totalPaid).toFixed(2)}`} label="Dettes restantes" trendColor="text-red-400"
+          details={[
+            { label: 'Dette totale', value: `$${totalDebt.toFixed(2)}` },
+            { label: 'Déjà remboursé', value: `$${totalPaid.toFixed(2)}`, color: 'text-green-400' },
+            { label: 'Restant', value: `$${(totalDebt - totalPaid).toFixed(2)}`, color: 'text-red-400' },
+            { label: 'Paiement mensuel', value: `$${totalMonthlyDebt.toFixed(2)}` },
+          ]} />
       </div>
 
       <div className="flex items-center justify-between">

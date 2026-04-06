@@ -86,10 +86,32 @@ export default function Sales() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <KpiCard icon="✨" value={`$${totalProfit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}`} label={t('profit')} trend="↗ +23%" trendColor="text-green-400" />
-        <KpiCard icon="📦" value={sales.length} label={t('sales')} />
-        <KpiCard icon="📱" value={sales.filter(s => s.payment_method === 'mobile_money').length} label={t('mobile_money')} />
-        <KpiCard icon="💳" value={`$${sales.filter(s => s.payment_method === 'credit').reduce((s, r) => s + (r.total || 0), 0).toFixed(2)}`} label={t('credit')} trendColor="text-yellow-400" />
+        <KpiCard icon="✨" value={`$${totalProfit.toLocaleString('fr-FR', { minimumFractionDigits: 2 })}`} label={t('profit')} trend="↗ +23%" trendColor="text-green-400"
+          details={[
+            { label: 'Profit total', value: `$${totalProfit.toFixed(2)}`, color: 'text-green-400' },
+            { label: 'Marge brute', value: `${totalRevenue > 0 ? ((totalProfit / totalRevenue) * 100).toFixed(1) : 0}%` },
+            { label: 'Revenus total', value: `$${totalRevenue.toFixed(2)}` },
+          ]} />
+        <KpiCard icon="📦" value={sales.length} label={t('sales')}
+          details={[
+            { label: 'Total ventes', value: sales.length },
+            { label: 'Cash', value: sales.filter(s => s.payment_method === 'cash').length },
+            { label: 'Mobile Money', value: sales.filter(s => ['mpesa', 'airtel', 'orange', 'mobile_money'].includes(s.payment_method)).length },
+            { label: 'Crédit', value: sales.filter(s => s.payment_method === 'credit').length, color: 'text-yellow-400' },
+          ]} />
+        <KpiCard icon="📱" value={sales.filter(s => ['mpesa','airtel','orange','mobile_money'].includes(s.payment_method)).length} label={t('mobile_money')}
+          details={[
+            { label: 'M-Pesa', value: sales.filter(s => s.payment_method === 'mpesa').length },
+            { label: 'Airtel Money', value: sales.filter(s => s.payment_method === 'airtel').length },
+            { label: 'Orange Money', value: sales.filter(s => s.payment_method === 'orange').length },
+            { label: 'Mobile Money', value: sales.filter(s => s.payment_method === 'mobile_money').length },
+          ]} />
+        <KpiCard icon="💳" value={`$${sales.filter(s => s.payment_method === 'credit').reduce((s, r) => s + (r.total || 0), 0).toFixed(2)}`} label={t('credit')} trendColor="text-yellow-400"
+          details={[
+            { label: 'Total crédit', value: `$${sales.filter(s => s.payment_method === 'credit').reduce((s, r) => s + (r.total || 0), 0).toFixed(2)}`, color: 'text-yellow-400' },
+            { label: 'Nb transactions', value: sales.filter(s => s.payment_method === 'credit').length },
+            { label: 'Attention', value: 'Relancer les clients', color: 'text-muted-foreground' },
+          ]} />
       </div>
 
       <div className="flex items-center justify-between">
